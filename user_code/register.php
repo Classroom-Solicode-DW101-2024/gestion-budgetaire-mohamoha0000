@@ -74,7 +74,7 @@ if (isset($_POST['submit'])) {
         main form button{
             padding: 0.5em 1em;
             width:100%;
-            max-width: 200px;
+            max-width: 150px;
             background-color: #48A6A7;
             border-radius: 10px;
             box-shadow: 5px 5px 2px rgba(0,0,0,0.2);
@@ -86,6 +86,10 @@ if (isset($_POST['submit'])) {
             background-color: #006A71;
             color: white;
         }
+        #togglePassword{
+            width: 10%;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -96,16 +100,20 @@ if (isset($_POST['submit'])) {
         <form method="post">
             <h2 style="text-align: center;color: rgb(54, 50, 50);">Register</h2>
             <label for="prenom">prenom:</label>
-            <input id="prenom" name="prenom" type="text" placeholder="enter prenom ...">
+            <input id="prenom" name="prenom" type="text" value="<?= $prenom ?>" placeholder="enter prenom ...">
             <span style="color: red;"><?php if(isset($erreurs["prenom"])) echo $erreurs["prenom"]; ?></span>
             <label for="nom">nom:</label>
-            <input id="nom" name="nom" type="text" placeholder="enter nom ...">
+            <input id="nom" name="nom" type="text" value="<?= $nom ?>" placeholder="enter nom ...">
             <span style="color: red;"><?php if(isset($erreurs["nom"])) echo $erreurs["nom"]; ?></span>
             <label for="email">email:</label>
-            <input type="email" name="email" id="email" placeholder="enter email ...">
+            <input type="email" name="email" id="email" value="<?= $email ?>" placeholder="enter email ...">
             <span style="color: red;"><?php if(isset($erreurs["email"])) echo $erreurs["email"]; ?></span>
             <label for="password">password:</label>
-            <input type="password" name="password" id="password" placeholder="enter password ...">
+            <div style="display: flex;align-items: center;">
+                <input style="width:83%;" type="password" name="password" id="password" value="<?= $password ?>" placeholder="enter password ...">
+                <img id="togglePassword" src="img/hidden.png">
+            </div>
+            <span style="color: red;"><?php if(isset($erreurs["password"])) echo $erreurs["password"]; ?></span>
             <div>
                 <button name="submit">register</button>
                 <p>Avez-vous déjà un compte? <a href="login.php">login</a></p>
@@ -113,7 +121,20 @@ if (isset($_POST['submit'])) {
         </form>
     </main>
     <footer>
-
     </footer>
+    <script>
+         const passwordInput = document.getElementById("password");
+         const toggleIcon = document.getElementById("togglePassword");
+         toggleIcon.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+            if(isPassword){
+                passwordInput.type ="text";
+                toggleIcon.src="img/show.png";
+            }else{
+                passwordInput.type ="password";
+                toggleIcon.src="img/hidden.png";
+            }
+        });
+    </script>
 </body>
 </html>
