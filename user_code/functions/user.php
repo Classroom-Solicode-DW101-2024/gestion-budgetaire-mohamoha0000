@@ -22,4 +22,21 @@ function register($nom,$prenom,$email,$password){
     ]);
     return true;
 }
+
+function login($password,$email){
+    global $pdo;
+    if(existe_email($email)){
+        $sql = "SELECT password FROM users WHERE email = :email";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        $rusult = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(password_verify($password,$rusult["password"])){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+
+
 ?>
