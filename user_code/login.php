@@ -6,7 +6,9 @@ if(isset($_POST["submit"])){
     $password = $_POST["password"];
     $email = $_POST["email"];
     if(!empty($password)&&filter_var($email,FILTER_VALIDATE_EMAIL)){
-        if(login($password,$email)){
+        $id=login($password,$email);
+        if($id>0){
+            $_SESSION["id"]=$id;
             header("Location:dashboard.php");
         }else{
             $error["incorrect"]="password or email incorrect";
@@ -33,13 +35,13 @@ if(isset($_POST["submit"])){
         body{
             height: 100vh;
             margin: 0;
+            background-color: #F2EFE7;
         }
         main{
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100%;
-            background-color: #F2EFE7;
         }
         main form{
             display: flex;

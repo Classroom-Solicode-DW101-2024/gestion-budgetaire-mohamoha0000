@@ -17,13 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         body{
             height: 100vh;
             margin: 0;
+            background-color: #F2EFE7;
         }
         main{
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100%;
-            background-color: #F2EFE7;
         }
         main form{
             display: flex;

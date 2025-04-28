@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 $host="Localhost";
 $bdname="gestion_budget";
 $username="root";

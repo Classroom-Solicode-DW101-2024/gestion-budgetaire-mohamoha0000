@@ -1,3 +1,8 @@
+<?php 
+require "functions/dashboard.php";
+if(!isset($_SESSION["id"])) header("Location:login.php");
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
