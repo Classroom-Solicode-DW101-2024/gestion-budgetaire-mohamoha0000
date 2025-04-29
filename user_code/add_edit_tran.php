@@ -1,10 +1,32 @@
 <?php 
+require "functions/transactions.php";
+if(!isset($_SESSION["id"])) header("Location:login.php");
+
 $categories = [
     'revenu' => ['Salaire', 'Bourse', 'Ventes', 'Autres'],
     'depense' => ['Logement', 'Transport', 'Alimentation', 'Santé', 'Divertissement', 'Éducation', 'Autres']
 ];
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+if (isset($_SESSION["form_data"])) {
+    $_POST = $_SESSION["form_data"];
+    unset($_SESSION["form_data"]); 
+}
+
+$isupdate=false;
+if(isset($_POST["id"]) && filter_var($_POST["id"], FILTER_VALIDATE_INT) && $_POST["id"]>0){
+    $isupdate=true;
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $errors=get_errors($_POST);
+    if(empty($errors)){
+        if($isupdate){
+            _update($_POST);
+        }else{
+            _ajouter($_POST);
+        }
+        header("Location:transactions.php");
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -63,9 +85,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             background-color: #006A71;
             color: white;
         }
-        #togglePassword{
-            width: 10%;
-            cursor: pointer;
+        @media (max-height: 600px) {
+            main {
+                align-items: flex-start;
+                padding-top: 1em;
+            }
         }
     </style>
 </head>
@@ -75,23 +99,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </header>
     <main>
         <form method="post">
-            <h1 style="text-align: center;"><?= isset($_GET["id"]) ? "update" : "ajouter"; ?></h1>
+            <?php if(isset($_POST["id"])):?>
+                <input type="hidden" name="id" value="<?=$_POST['id']?>">
+            <?php endif;?>
+            <h1 style="text-align: center;"><?= $isupdate ? "update" : "ajouter"; ?></h1>
             <label for="type">type:</label>
             <div>
                 <span>revenu</span> <input type="radio" name="type" id="type" value="revenu" onchange="this.form.submit()" <?php if (isset($_POST['type']) && $_POST['type'] === 'revenu') echo 'checked'; ?>>
                 <span>depense</span><input type="radio" name="type" id="type" value="depense" onchange="this.form.submit()" <?php if (isset($_POST['type']) && $_POST['type'] === 'depense') echo 'checked'; ?>>
             </div>
+            <span style="color: red;"><?php if(isset($errors["type"])) echo $errors["type"]; ?></span>
             <select name="name_type" id="name_type">
                 <option value="" selected disabled>select name type</option>
                 <?php foreach($categories[$_POST['type']] as $name):?>
                     <option value="<?=$name;?>" <?php if (isset($_POST['name_type'])) echo $_POST['name_type'] === $name ? 'selected' : '';?>><?=$name;?></option>
                 <?php endforeach;?>
             </select>
+            <span style="color: red;"><?php if(isset($errors["name_type"])) echo $errors["name_type"]; ?></span>
             <label for="montant">montant:</label>
-            <input type="number" step="any" id="montant" name="montant" value="<?= $_POST["montant"] ?>">
+            <input type="number" step="any" id="montant" name="montant" value="<?php if(isset($_POST["montant"])) echo $_POST["montant"]  ?>">
+            <span style="color: red;"><?php if(isset($errors["montant"])) echo $errors["montant"]; ?></span>
             <label for="description">description:</label>
-            <textarea name="description" id="description" cols="30" rows="5"><?= $_POST["description"] ?></textarea>
-            <button><?= isset($_GET["id"]) ? "update" : "ajouter"; ?></button>
+            <textarea name="description" id="description" cols="30" rows="5"><?php if(isset($_POST["description"])) echo $_POST["description"] ?></textarea>
+            <span style="color: red;"><?php if(isset($errors["description"])) echo $errors["description"]; ?></span>
+            <label for="date_transaction" >date:</label>
+            <input type="date" name="date_transaction" id="date_transaction" value="<?php if(isset($_POST['date_transaction'])) echo $_POST['date_transaction'] ?>">
+            <span style="color: red;"><?php if(isset($errors["date_transaction"])) echo $errors["date_transaction"]; ?></span>
+            <button><?= $isupdate ? "update" : "ajouter"; ?></button>
         </form>
     </main>
     <footer></footer>

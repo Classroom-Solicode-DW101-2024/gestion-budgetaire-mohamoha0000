@@ -1,5 +1,24 @@
 <?php 
 require "functions/transactions.php";
+
+if(!isset($_SESSION["id"])) header("Location:login.php");
+
+if(isset($_GET["id"]) && filter_var($_GET["id"], FILTER_VALIDATE_INT)){
+    $transaction=get_transaction($_GET["id"]);
+    $categories=get_categories($transaction["category_id"]);
+    $_SESSION["form_data"] = [
+        "id"=>$_GET["id"],
+        "type" => $categories["type"],
+        "name_type" => $categories["nom"],
+        "montant" => $transaction["montant"],
+        "description" => $transaction["description"],
+        "date_transaction" => $transaction["date_transaction"]
+    ];
+
+    header("Location: add_edit_tran.php");
+}
+
+
 $year= isset($_GET['year'])? $_GET['year'] : "";
 $month = isset($_GET['month'])? $_GET['month'] : "";
 $transactions=get_transactions($year,$month);
@@ -99,13 +118,13 @@ $transactions=get_transactions($year,$month);
             font-size: 16px;
             transition: background-color 0.3s;
         }
-        td  button:first-of-type{
+        td  a:first-of-type button{
             margin-right: 1em;
         }
-        td  button:first-of-type:hover{
+        td  a:first-of-type button:hover{
             background-color: rgb(179, 74, 74);
         }
-        td  button:last-of-type:hover{
+        td  a:last-of-type button:hover{
             background-color:rgb(8, 78, 8);
             color: wheat;
         }
@@ -115,7 +134,9 @@ $transactions=get_transactions($year,$month);
     </style>
 </head>
 <body>
-    <header></header>
+    <header>
+
+    </header>
     <main>
         <h2>filter</h2>
         <div class="filter">
@@ -155,12 +176,12 @@ $transactions=get_transactions($year,$month);
                     <td><?= $transaction["montant"] ?></td>
                     <td><?= $transaction["description"] ?></td>
                     <td><?= $transaction["date_transaction"] ?></td>
-                    <td><button>remove</button><button>update</button></td>
+                    <td><a href="transactions.php?rm=<?=$transaction['id']?>"><button>remove</button></a> <a href="transactions.php?id=<?=$transaction['id']?>"><button>update</button></a></td>
                 </tr>
                 <?php endforeach ?>
             </tbody>
         </table>
-        <button id="ajouter"  onclick="alert('hi');"><img src="img/plus.png" alt=""></button>
+        <button id="ajouter"  title="Click to ajouter"  onclick="window.location.href='add_edit_tran.php'"><img src="img/plus.png" alt=""></button>
     </main>
     <footer></footer>
 </body>

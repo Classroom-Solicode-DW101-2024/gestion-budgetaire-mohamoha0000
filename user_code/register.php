@@ -90,6 +90,12 @@ if (isset($_POST['submit'])) {
             width: 10%;
             cursor: pointer;
         }
+        @media (max-height: 600px) {
+            main {
+                align-items: flex-start;
+                padding-top: 1em;
+            }
+        }
     </style>
 </head>
 <body>

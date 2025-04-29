@@ -22,11 +22,60 @@ function get_transactions($year="",$month=""){
     if (!empty($conditions)) {
         $sql .= " WHERE " . implode(" AND ", $conditions);
     }
-
+    $sql .=" AND trans.user_id = :user_id";
+    $params['user_id']=$_SESSION["id"];
     $sql .= " ORDER BY trans.date_transaction DESC LIMIT 30";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function get_transaction($id){
+    global $pdo;
+    $sql="SELECT * FROM  transactions WHERE id = :id AND user_id = :user_id";
+    $stmt=$pdo->prepare($sql);
+    $stmt->execute([
+         ":id"=>$id,
+         ":user_id"=>$_SESSION["id"]
+        ]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function get_categories($id){
+    global $pdo;
+    $sql="SELECT * FROM categories WHERE id = :id";
+    $stmt=$pdo->prepare($sql);
+    $stmt->bindParam(":id",$id);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function get_errors($data){
+    $errors=[];
+    if(!$data["type"]=="revenu" && !$data["type"]=="depense"){
+        $errors["type"]="Veuillez sélectionner un type";
+    }
+    if(empty($data["name_type"])){
+        $errors["name_type"]="Veuillez choisir quelque chose";
+    }
+    if(!is_numeric($data["montant"])){
+        $errors["montant"]="montant n'est pas valide";
+    }
+    if(empty($data["description"])){
+        $errors["description"]="description  est vide";
+    }
+    $date = $data["date_transaction"];
+    $valid = DateTime::createFromFormat('Y-m-d', $date);
+    if(!$valid){
+        $errors["date_transaction"]="date n'est pas valide";
+    }
+
+    return $errors;
+}
+
+function _update($data){
+    //$sql="UPDATE users SET montant = :montant , description = : description, date_transaction	=''  WHERE id = :id"
+}
+
 ?>
