@@ -51,6 +51,16 @@ function get_categories($id){
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+function get_id_categories($type,$name_type){
+    global $pdo;
+    $sql="SELECT id FROM categories WHERE type = :type AND nom = :nom";
+    $stmt=$pdo->prepare($sql);
+    $stmt->bindParam(":type",$type);
+    $stmt->bindParam(":nom",$name_type);
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
+
 function get_errors($data){
     $errors=[];
     if(!$data["type"]=="revenu" && !$data["type"]=="depense"){
@@ -75,7 +85,38 @@ function get_errors($data){
 }
 
 function _update($data){
-    //$sql="UPDATE users SET montant = :montant , description = : description, date_transaction	=''  WHERE id = :id"
+    global $pdo;
+    $category_id=get_id_categories($data["type"],$data["name_type"]);
+    $sql="UPDATE transactions SET category_id  = :category_id, montant=:montant , description=:description ,date_transaction = :date_transaction  WHERE id = :id";
+    $stmt=$pdo->prepare($sql);
+    $stmt->execute([
+        ":category_id"=>$category_id,
+        ":montant"=>$data["montant"],
+        ":description"=>$data["description"],
+        ":date_transaction"=>$data["date_transaction"],
+        ":id"=>$data["id"]
+    ]);
+}
+function _ajouter($data){
+    global $pdo;
+    $category_id=get_id_categories($data["type"],$data["name_type"]);
+    $sql="INSERT INTO transactions (user_id,category_id,montant,description,date_transaction) VALUE (?,?,?,?,?)";
+    $stmt=$pdo->prepare($sql);
+    $stmt->execute([
+        $_SESSION["id"],
+        $category_id,
+        $data["montant"],
+        $data["description"],
+        $data["date_transaction"]
+    ]);
 }
 
+function _remove($id){
+    global $pdo;
+    $sql="DELETE FROM transactions WHERE id=:id AND user_id = :user_id";
+    $stmt=$pdo->prepare($sql);
+    $stmt->bindParam(":id",$id);
+    $stmt->bindParam(":user_id",$_SESSION["id"]);
+    $stmt->execute();
+}
 ?>

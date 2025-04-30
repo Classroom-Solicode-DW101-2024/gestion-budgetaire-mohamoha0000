@@ -18,6 +18,10 @@ if(isset($_GET["id"]) && filter_var($_GET["id"], FILTER_VALIDATE_INT)){
     header("Location: add_edit_tran.php");
 }
 
+if(isset($_GET["rm"])&& filter_var($_GET["rm"], FILTER_VALIDATE_INT)){
+    _remove($_GET["rm"]);
+    header("Location: transactions.php");
+}
 
 $year= isset($_GET['year'])? $_GET['year'] : "";
 $month = isset($_GET['month'])? $_GET['month'] : "";
@@ -134,9 +138,7 @@ $transactions=get_transactions($year,$month);
     </style>
 </head>
 <body>
-    <header>
-
-    </header>
+    <div id="header-container"></div>
     <main>
         <h2>filter</h2>
         <div class="filter">
@@ -176,7 +178,7 @@ $transactions=get_transactions($year,$month);
                     <td><?= $transaction["montant"] ?></td>
                     <td><?= $transaction["description"] ?></td>
                     <td><?= $transaction["date_transaction"] ?></td>
-                    <td><a href="transactions.php?rm=<?=$transaction['id']?>"><button>remove</button></a> <a href="transactions.php?id=<?=$transaction['id']?>"><button>update</button></a></td>
+                    <td><a onclick="return confirm('Are you sure you want to delete?');" href="transactions.php?rm=<?=$transaction['id']?>"><button>remove</button></a> <a href="transactions.php?id=<?=$transaction['id']?>"><button>update</button></a></td>
                 </tr>
                 <?php endforeach ?>
             </tbody>
@@ -184,5 +186,27 @@ $transactions=get_transactions($year,$month);
         <button id="ajouter"  title="Click to ajouter"  onclick="window.location.href='add_edit_tran.php'"><img src="img/plus.png" alt=""></button>
     </main>
     <footer></footer>
+    <script>
+    fetch("header.html")
+        .then(res => res.text())
+        .then(data => {
+        document.getElementById("header-container").innerHTML = data;
+
+        const navMenu = document.querySelector("header nav ul");
+        const hamburgerIcon = document.querySelector(".hamburger");
+        const links = document.querySelectorAll("header nav ul li a");
+
+        links.forEach(a => {
+            a.addEventListener("click", () => {
+            navMenu.classList.remove('show');
+            });
+        });
+
+        hamburgerIcon.addEventListener("click", () => {
+            navMenu.classList.toggle("show");
+        });
+        })
+        .catch(err => console.error("Failed to load header:", err));
+    </script>
 </body>
 </html>

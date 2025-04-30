@@ -17,7 +17,7 @@ if(isset($_POST["id"]) && filter_var($_POST["id"], FILTER_VALIDATE_INT) && $_POS
     $isupdate=true;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_POST["action"])) {
     $errors=get_errors($_POST);
     if(empty($errors)){
         if($isupdate){
@@ -94,9 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <header>
-        
-    </header>
+    <div id="header-container"></div>
     <main>
         <form method="post">
             <?php if(isset($_POST["id"])):?>
@@ -123,11 +121,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <textarea name="description" id="description" cols="30" rows="5"><?php if(isset($_POST["description"])) echo $_POST["description"] ?></textarea>
             <span style="color: red;"><?php if(isset($errors["description"])) echo $errors["description"]; ?></span>
             <label for="date_transaction" >date:</label>
-            <input type="date" name="date_transaction" id="date_transaction" value="<?php if(isset($_POST['date_transaction'])) echo $_POST['date_transaction'] ?>">
+            <input type="date" name="date_transaction" id="date_transaction" value="<?php if(isset($_POST['date_transaction'])) echo $_POST['date_transaction']; else echo date('Y-m-d');  ?>">
             <span style="color: red;"><?php if(isset($errors["date_transaction"])) echo $errors["date_transaction"]; ?></span>
-            <button><?= $isupdate ? "update" : "ajouter"; ?></button>
+            <button name="action"><?= $isupdate ? "update" : "ajouter"; ?></button>
         </form>
     </main>
     <footer></footer>
+    <script>
+    fetch("header.html")
+        .then(res => res.text())
+        .then(data => {
+        document.getElementById("header-container").innerHTML = data;
+
+        const navMenu = document.querySelector("header nav ul");
+        const hamburgerIcon = document.querySelector(".hamburger");
+        const links = document.querySelectorAll("header nav ul li a");
+
+        links.forEach(a => {
+            a.addEventListener("click", () => {
+            navMenu.classList.remove('show');
+            });
+        });
+
+        hamburgerIcon.addEventListener("click", () => {
+            navMenu.classList.toggle("show");
+        });
+        })
+        .catch(err => console.error("Failed to load header:", err));
+    </script>
 </body>
 </html>
