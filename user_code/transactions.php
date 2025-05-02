@@ -187,7 +187,10 @@ $transactions=get_transactions($year,$month);
     </main>
     <footer></footer>
     <script>
-    fetch("header.html")
+     function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    fetch("header.html?v="+getRandomInt(0, 1000))
         .then(res => res.text())
         .then(data => {
         document.getElementById("header-container").innerHTML = data;

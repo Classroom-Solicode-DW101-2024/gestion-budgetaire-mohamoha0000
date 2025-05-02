@@ -38,5 +38,13 @@ function login($password,$email){
     }
 }
 
+function name_user($id){
+    global $pdo;
+    $sql = "SELECT prenom,nom FROM users WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id' => $id]);
+    $rusult = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $rusult["prenom"]." ".$rusult["nom"];
+}
 
 ?>
